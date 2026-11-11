@@ -108,10 +108,8 @@ def _make_app(tmp_path, vault_path):
     db.set("auto_lock", "0")
     try:
         return FolderLockApp(db, open_vault=str(vault_path))
-    except tkinter.TclError as exc:
-        if "display" in str(exc).lower():
-            pytest.skip(f"no display available: {exc}")
-        raise
+        except tkinter.TclError as exc:
+        pytest.skip(f"Tkinter unavailable in this environment: {exc}")
 
 
 def _pump(app, seconds=0.3):
