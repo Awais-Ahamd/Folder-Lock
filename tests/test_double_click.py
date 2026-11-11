@@ -97,19 +97,23 @@ def test_frozen_command_points_at_the_exe(monkeypatch):
 
 
 # ------------------------------------------------------------------ GUI: double-click straight to password
+
 def _make_app(tmp_path, vault_path):
     import tkinter
     from database.settings_db import SettingsDB
     from ui.app import FolderLockApp
     from ui.icons import icon
-    icon.cache_clear()                                  # cached images belong to a previous (destroyed) window
+
+    icon.cache_clear()
     db = SettingsDB(tmp_path / "s.db")
     db.set("welcome_seen", "1")
     db.set("auto_lock", "0")
+
     try:
         return FolderLockApp(db, open_vault=str(vault_path))
-        except tkinter.TclError as exc:
+    except tkinter.TclError as exc:
         pytest.skip(f"Tkinter unavailable in this environment: {exc}")
+
 
 
 def _pump(app, seconds=0.3):
