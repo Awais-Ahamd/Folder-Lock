@@ -1,0 +1,30 @@
+name: Build FolderLock.exe
+
+# Builds the single portable FolderLock.exe on a real Windows machine, runs the full test suite
+# and the packaged self-test, then publishes the exe as a downloadable artifact.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: Test, build and self-test the executable
+        run: python build.py
+      - name: Compute checksum
+        shell: pwsh
+        run: (Get-FileHash dist\FolderLock.exe -Algorithm SHA256).Hash | Out-File dist\FolderLock.exe.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FolderLock-windows
+          path: |
+            dist/FolderLock.exe
+            dist/FolderLock.exe.sha256
